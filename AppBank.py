@@ -1,0 +1,199 @@
+#Tarefas
+# 1 lista de clientes.
+# 2 fazer novos testes.
+
+Contas = dict(cod=[], saldo=[], tr=[])
+cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[])
+Trans = dict(cod=[], tipo=[], origem=[], destino=[], valor=[])
+numClientes = 0
+
+def startsystem():
+    print('--------------- 1 - MENU INICIAL ---------------')
+    print('')
+    print('1 - CLIENTE')  #todo menu de criação de cliente está OK
+    print('2 - TRANSAÇÃO')  #entra no menu de transação OK
+    print('9 - SAIR')
+    starSystem = input('********* OPÇÃO DESEJADA: ')
+    print()
+    if starSystem == '1':
+        menuCliente()
+    if starSystem == '2':
+        menuTrans()
+    else:
+        print('Oção Inválida!')
+
+
+def menuCliente():
+    print('--------------- 2 - CLIENTE ---------------')  #todo menu de criação de cliente está OK
+    print('')
+    print('1 - CADASTRO')
+    print('2 - CONSULTA')
+    print('3 - LISTAR DE CLIENTES')
+    print('9 - VOLTAR')
+    menuCli = input('********* OPÇÃO DESEJADA: ')
+    if menuCli == '1':
+        novoCliente()
+    if menuCli == '2':
+        consultaCliente()
+    if menuCli == '3':
+        listaCliente()
+    if menuCli == '9':
+        startsystem()
+
+
+def menuTrans():
+    print('--------------- 3 - TRANSAÇÕES ---------------')
+    print("")
+    print("1 - DEPOSITO")  #inicia o deposito normalmente. OK
+    print("2 - SAQUE")
+    print("3 - TRANSFERENCIA")
+    print("4 - IMPRIMIR LISTA TRANSAÇÕES")
+    print("5 - VOLTAR")
+    trans = input('********* OPÇÃO DESEJADA: ')
+    if trans == '1':
+        transDeposito()
+    if trans == '2':
+        transSaque()
+    if trans == '3':
+        transFerencia()
+    if trans == '4':
+        transLista()
+
+
+def novoCliente():
+    # ----------- ("NOVO")Função Inserir novo Cliente, cria conta corrente e deposita valor inicial ---------------
+    print('------------------------- 1. CADASTRO CLIENTE ----------------------')
+    cod = input('CODIGO DO CLIENTE: ')
+    nome = input('NOME: ')
+    telefone = input('TELEFONE: ')
+    cidade = input('CIDADE: ')
+    cc = input('N. CONTA-CORRENTE: ')
+    depinicial = input('DEPÓSITO INICIAL: ')
+    depinicial = float(depinicial)
+    print('')
+    cliente['cod'].append(cod)
+    cliente['nome'].append(nome)
+    cliente['cidade'].append(cidade)
+    cliente['telefone'].append(telefone)
+    Contas['cod'].append(cc)
+    Contas['saldo'].append(depinicial)
+    print('Bem Vindo {}, Conta-Corrente n. {} criada com Sucesso!, seu saldo é: {}'.format(nome, cc, depinicial))
+
+    print('Deseja Cadastrar outro Cliente?: ')
+    print('1 - SIM: ')
+    print('2 - Voltar: ')
+    outroCli = input('********* OPÇÃO DESEJADA: ')
+    if outroCli == '1':
+        novoCliente()
+    else:
+        startsystem()
+
+
+def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente ---------------
+
+    print('------------------------- 2. CONSULTA CLIENTE ----------------------')
+    consultar = input("\nQual o codigo do cliente?: ")
+    consultarV = consultar in cliente['cod']
+    if consultarV:
+        pos = cliente['cod'].index(consultar)
+        print('------------ Informações Localizadas Com sucesso! ------------')
+        print('')
+        print("Codigo \t Nome \t\t Cidade \t Telefone")
+        print("{0} \t {1} \t {2} \t {3}".format(cliente['cod'][pos], cliente['nome'][pos], cliente['cidade'][pos],
+                                                cliente['telefone'][pos]))
+        print('')
+        novaConsultaCliente = input('\nDeseja realizar nova Consulta? 1.Sim ou 2.Menu Inicial:\n')
+        if novaConsultaCliente == '1':
+            consultaCliente()
+        else:
+            startsystem()
+    else:
+        exitConsultaCliente = input('\nCliente não Localizado!\nDeseja realizar nova Consulta? 1.Sim ou 2.Menu Inicial:\n')
+        if exitConsultaCliente == '1':
+            consultaCliente()
+        else:
+            startsystem()
+
+def listaCliente():
+    print("Codigo \t Nome \t\t Telefone \t Conta \t Saldo")
+    pos = cliente
+    print(pos)
+
+
+def transDeposito() -> object:
+    print()
+    print('---------- 3.1 REALIZANDO DEPÓSITO -----------')
+    consultar = input("\nInforme o codigo da conta em que deseja realizar o deposito: ")
+    consultarV = consultar in Contas['cod']
+
+    if consultarV:
+
+        pos = Contas['cod'].index(consultar)
+        print()
+        print('Cliente {} localizado Com Sucesso'.format(cliente['nome']))  #Buquei cliente no banco de dados e imprimi
+        deposito = input("\nInforme o valor do deposito: ")
+        deposito = float(deposito)
+        valor = Contas['saldo'][pos]
+        valor = valor + deposito
+        Contas['saldo'][pos] = valor
+        print('Deposito realizado com Sucesso')
+        print()
+        print('Deseja Realizar outro Depósito?: ')
+        print('1 - SIM: ')
+        print('2 - MENU INICIAL: ')
+        outroDep = input('********* DIGITE A OPÇÃO DESEJADA: ')
+        if outroDep == '1':
+            transDeposito()
+        else:
+            startsystem()
+
+    else:
+        input("Conta nao existe!!")
+
+        print('Deseja Realizar outro Depósito?: ')
+        print('1 - SIM: ')
+        print('2 - Voltar: ')
+        outroDep = input('********* OPÇÃO DESEJADA: ')
+        if outroDep == '1':
+            transDeposito()
+        else:
+            startsystem()
+
+
+def transSaque():
+    consultar = input("\nInforme o codigo da conta em que deseja realizar o saque: ")
+    consultarV = consultar in Contas['cod']
+
+    if consultarV == True:
+
+        pos = Contas['cod'].index(consultar)
+        saque = input("\nInforme o valor do saque: ")
+        saque = float(saque)
+        valor = Contas['saldo'][pos]
+
+        if valor > saque:  # INSERIR UMA VALIDAÇÃO DE LIMITE ()
+            valor = valor - saque
+            Contas['saldo'][pos] = valor
+
+        else:
+            input("Saldo insuficiente!!")
+
+    else:
+        input("Conta nao existe!!")
+
+def transFerencia():
+    print('MÉTODO - TRANSFERENCIA EM MANUTENÇÃO')
+    menuTrans()
+    print()
+
+def transLista():
+    print('MÉTODO - LISTAR EM MANUTENÇÃO')
+    menuTrans()
+    print()
+
+# def main():
+#     pass
+#
+
+if __name__ == '__main__':
+    startsystem()
