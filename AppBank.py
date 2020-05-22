@@ -1,6 +1,8 @@
-#Tarefas
-# 1 lista de clientes.
-# 2 fazer novos testes.
+#Tarefas:
+# 1 lista de clientes;
+# 2 fazer novos testes;
+# 3 implementar a função transaque, transferencia, translista e listaCliente;
+
 
 Contas = dict(cod=[], saldo=[], tr=[])
 cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[])
