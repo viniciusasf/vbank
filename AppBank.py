@@ -8,12 +8,13 @@ Trans = dict(cod=[], tipo=[], origem=[], destino=[], valor=[])
 numClientes = 0
 
 def startsystem():
+    print('')
     print('--------------- 1 - MENU INICIAL ---------------')
     print('')
-    print('1 - CLIENTE')  #todo menu de criação de cliente está OK
-    print('2 - TRANSAÇÃO')  #entra no menu de transação OK
+    print('1 - CADASTRO DE CLIENTE')  #todo menu de criação de cliente está OK
+    print('2 - REALIZAR TRANSAÇÃO')  #entra no menu de transação OK
     print('9 - SAIR')
-    starSystem = input('********* OPÇÃO DESEJADA: ')
+    starSystem = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
     print()
     if starSystem == '1':
         menuCliente()
@@ -24,13 +25,13 @@ def startsystem():
 
 
 def menuCliente():
-    print('--------------- 2 - CLIENTE ---------------')  #todo menu de criação de cliente está OK
+    print('------------- 2 - MENU CLIENTE ----------------')  #todo menu de criação de cliente está OK
     print('')
     print('1 - CADASTRO')
     print('2 - CONSULTA')
     print('3 - LISTAR DE CLIENTES')
     print('9 - VOLTAR')
-    menuCli = input('********* OPÇÃO DESEJADA: ')
+    menuCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
     if menuCli == '1':
         novoCliente()
     if menuCli == '2':
@@ -42,14 +43,14 @@ def menuCliente():
 
 
 def menuTrans():
-    print('--------------- 3 - TRANSAÇÕES ---------------')
+    print('--------------- 3 - TRANSAÇÕES ----------------')
     print("")
     print("1 - DEPOSITO")  #inicia o deposito normalmente. OK
     print("2 - SAQUE")
     print("3 - TRANSFERENCIA")
     print("4 - IMPRIMIR LISTA TRANSAÇÕES")
     print("5 - VOLTAR")
-    trans = input('********* OPÇÃO DESEJADA: ')
+    trans = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
     if trans == '1':
         transDeposito()
     if trans == '2':
@@ -62,7 +63,9 @@ def menuTrans():
 
 def novoCliente():
     # ----------- ("NOVO")Função Inserir novo Cliente, cria conta corrente e deposita valor inicial ---------------
-    print('------------------------- 1. CADASTRO CLIENTE ----------------------')
+    print()
+    print('------- 1 - CADASTRO CLIENTE / C.C ---------------')
+    print()
     cod = input('CODIGO DO CLIENTE: ')
     nome = input('NOME: ')
     telefone = input('TELEFONE: ')
@@ -77,12 +80,12 @@ def novoCliente():
     cliente['telefone'].append(telefone)
     Contas['cod'].append(cc)
     Contas['saldo'].append(depinicial)
-    print('Bem Vindo {}, Conta-Corrente n. {} criada com Sucesso!, seu saldo é: {}'.format(nome, cc, depinicial))
-
-    print('Deseja Cadastrar outro Cliente?: ')
+    print('Cliente: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cc, depinicial))
+    print('')
+    print('DESEJA CADASTRAR OUTRO CLIENTE?: ')
     print('1 - SIM: ')
-    print('2 - Voltar: ')
-    outroCli = input('********* OPÇÃO DESEJADA: ')
+    print('2 - VOLTAR: ')
+    outroCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
     if outroCli == '1':
         novoCliente()
     else:
@@ -130,15 +133,15 @@ def transDeposito() -> object:
 
         pos = Contas['cod'].index(consultar)
         print()
-        print('Cliente {} localizado Com Sucesso'.format(cliente['nome']))  #Buquei cliente no banco de dados e imprimi
+        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(cliente['nome'], Contas['saldo']))  #Buquei cliente no banco de dados e imprimi
         deposito = input("\nInforme o valor do deposito: ")
         deposito = float(deposito)
         valor = Contas['saldo'][pos]
         valor = valor + deposito
         Contas['saldo'][pos] = valor
-        print('Deposito realizado com Sucesso')
-        print()
-        print('Deseja Realizar outro Depósito?: ')
+        print('Deposito realizado com Sucesso!!!')
+        print('O seu SALDO atual é de: {}, deseja realizar outro Depósito?: '.format(Contas['saldo']))
+        print('')
         print('1 - SIM: ')
         print('2 - MENU INICIAL: ')
         outroDep = input('********* DIGITE A OPÇÃO DESEJADA: ')
@@ -153,7 +156,7 @@ def transDeposito() -> object:
         print('Deseja Realizar outro Depósito?: ')
         print('1 - SIM: ')
         print('2 - Voltar: ')
-        outroDep = input('********* OPÇÃO DESEJADA: ')
+        outroDep = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
         if outroDep == '1':
             transDeposito()
         else:
