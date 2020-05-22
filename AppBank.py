@@ -2,10 +2,11 @@
 # 1 lista de clientes;
 # 2 fazer novos testes;
 # 3 implementar a função transaque, transferencia, translista e listaCliente;
+import requests
 
 
 Contas = dict(cod=[], saldo=[], tr=[])
-cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[])
+cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[], address_data=[])
 Trans = dict(cod=[], tipo=[], origem=[], destino=[], valor=[])
 numClientes = 0
 
@@ -63,6 +64,46 @@ def menuTrans():
         transLista()
 
 
+def consultaCep():  # <------ Consulta API Correios para busca de CEP
+    print('---------------------------')
+    print('----- Consulta CEP --------')
+    print('---------------------------')
+    print()
+
+    cep_input = input('Digite o CEP para a consulta: ')
+
+    if len(cep_input) != 8:
+        option1 = int(input('CEP Inválido, Deseja realizar uma nova consulta ?\n1. Sim\n2. Sair\n'))
+        if option1 == 1:
+            startsystem()
+        else:
+            print('Saindo...')
+            exit()
+
+    request = requests.get('https://viacep.com.br/ws/{}/json/'.format(cep_input))
+
+    address_data = request.json()
+
+    if 'erro' not in address_data:
+        print('==> CEP ENCONTRADO <==')
+
+        print('CEP: {}'.format(address_data['cep']))
+        print('Logradouro: {}'.format(address_data['logradouro']))
+        print('Complemento: {}'.format(address_data['complemento']))
+        print('Bairro: {}'.format(address_data['bairro']))
+        print('Cidade: {}'.format(address_data['localidade']))
+        print('Estado: {}'.format(address_data['uf']))
+    else:
+        print('{}: CEP inválido.'.format(cep_input))
+
+    print('---------------------------------')
+    option = int(input('Deseja realizar uma nova consulta ?\n1. Sim\n2. Sair\n'))
+    if option == 1:
+        startsystem()
+    else:
+        print('Saindo...')
+
+
 def novoCliente():
     # ----------- ("NOVO")Função Inserir novo Cliente, cria conta corrente e deposita valor inicial ---------------
     print()
@@ -70,28 +111,34 @@ def novoCliente():
     print()
     cod = input('CODIGO DO CLIENTE: ')
     nome = input('NOME: ')
-    telefone = input('TELEFONE: ')
-    cidade = input('CIDADE: ')
-    cc = input('N. CONTA-CORRENTE: ')
-    depinicial = input('DEPÓSITO INICIAL: ')
-    depinicial = float(depinicial)
-    print('')
-    cliente['cod'].append(cod)
-    cliente['nome'].append(nome)
-    cliente['cidade'].append(cidade)
-    cliente['telefone'].append(telefone)
-    Contas['cod'].append(cc)
-    Contas['saldo'].append(depinicial)
-    print('Cliente: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cc, depinicial))
-    print('')
-    print('DESEJA CADASTRAR OUTRO CLIENTE?: ')
-    print('1 - SIM: ')
-    print('2 - VOLTAR: ')
-    outroCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
-    if outroCli == '1':
-        novoCliente()
+    print('DESEJA CONSULTAR O CEP: ?')
+    cep = input('DIGITE 1. PARA SIM\n2. Continue...')
+    if cep == '1':
+        consultaCep()
     else:
-        startsystem()
+        telefone = input('TELEFONE: ')
+        cidade = input('CIDADE:')
+        cc = input('N. CONTA-CORRENTE: ')
+        depinicial = input('DEPÓSITO INICIAL: ')
+        depinicial = float(depinicial)
+        print('')
+        cliente['cod'].append(cod)
+        cliente['nome'].append(nome)
+        cliente['cidade'].append(cidade)
+        cliente['telefone'].append(telefone)
+        Contas['cod'].append(cc)
+        Contas['saldo'].append(depinicial)
+        print('Cliente: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cc, depinicial))
+        print('')
+        print('DESEJA CADASTRAR OUTRO CLIENTE?: ')
+        print('1 - SIM: ')
+        print('2 - VOLTAR: ')
+        outroCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
+        if outroCli == '1':
+            novoCliente()
+        else:
+            startsystem()
+    print('-')
 
 
 def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente ---------------
@@ -195,6 +242,9 @@ def transLista():
     print('MÉTODO - LISTAR EM MANUTENÇÃO')
     menuTrans()
     print()
+
+
+
 
 # def main():
 #     pass
