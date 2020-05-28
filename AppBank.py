@@ -1,14 +1,36 @@
+import pickle
+import sys
+import os
+
 #Tarefas:
-# 1 lista de clientes;
+# 1 implementar a transaque, transferencia;
 # 2 fazer novos testes;
-# 3 implementar a função transaque, transferencia, translista e listaCliente;
+
+
+if os.path.getsize('data.pickle') > 0:
+    with open('data.pickle','rb') as p:
+        unpickler = pickle.Unpickler(p)
+        data = unpickler.load()
+else:
+    data = dict()
+
 
 
 Contas = dict(cod=[], saldo=[], tr=[])
 cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[])
 Trans = dict(cod=[], tipo=[], origem=[], destino=[], valor=[])
-numClientes = 0
+numClientes = 0  #utilizar para insrir codigo no cliente.
 
+if data.get('Contas'):
+    Contas = data.get('Contas')
+if data.get('cliente'):
+    cliente = data.get('cliente')
+if data.get('Trans'):
+    Trans = data.get('Trans')
+
+MENU_INICIAL = """
+
+"""
 def startsystem():
     print('')
     print('--------------- 1 - MENU INICIAL ---------------')
@@ -22,9 +44,18 @@ def startsystem():
         menuCliente()
     if starSystem == '2':
         menuTrans()
+    if starSystem == '9':
+        sair()
     else:
         print('Oção Inválida!')
 
+def sair():
+    data = dict(Contas=Contas, cliente=cliente, Trans=Trans)
+
+    with open('data.pickle', 'wb') as p:
+        pickle.dump(data, p)
+
+    sys.exit()
 
 def menuCliente():
     print('------------- 2 - MENU CLIENTE ----------------')  #todo menu de criação de cliente está OK
@@ -34,6 +65,7 @@ def menuCliente():
     print('3 - LISTAR DE CLIENTES')
     print('9 - VOLTAR')
     menuCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
+    print()
     if menuCli == '1':
         novoCliente()
     if menuCli == '2':
@@ -68,9 +100,10 @@ def novoCliente():
     print()
     print('------- 1 - CADASTRO CLIENTE / C.C ---------------')
     print()
-    cod = input('CODIGO DO CLIENTE: ')
+    cod = int(max(cliente['cod']))+1
     nome = input('NOME: ')
     telefone = input('TELEFONE: ')
+    # deseja consultar o cep e deseja utilizar informaoes encontradas.
     cidade = input('CIDADE: ')
     cc = input('N. CONTA-CORRENTE: ')
     depinicial = input('DEPÓSITO INICIAL: ')
@@ -82,7 +115,7 @@ def novoCliente():
     cliente['telefone'].append(telefone)
     Contas['cod'].append(cc)
     Contas['saldo'].append(depinicial)
-    print('Cliente: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cc, depinicial))
+    print('Cliente: {}, seu Codigo é: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cod, cc, depinicial))
     print('')
     print('DESEJA CADASTRAR OUTRO CLIENTE?: ')
     print('1 - SIM: ')
@@ -119,10 +152,19 @@ def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente --
         else:
             startsystem()
 
+
 def listaCliente():
+    print('---------- 3. LISTA DE CLIENTES -----------')
+    print()
     print("Codigo \t Nome \t\t Telefone \t Conta \t Saldo")
     pos = cliente
     print(pos)
+    print('')
+    listavolta = input('DIGITE 9 MENU INICIAL: ')
+    if listavolta == '9':
+        startsystem()
+    print('')
+
 
 
 def transDeposito() -> object:
@@ -191,7 +233,7 @@ def transFerencia():
     menuTrans()
     print()
 
-def transLista():
+def transLista():  #extrato conta-corrente listar as transaçoes realizadas
     print('MÉTODO - LISTAR EM MANUTENÇÃO')
     menuTrans()
     print()
