@@ -1,8 +1,15 @@
-#Tarefas:
-# 1 lista de clientes;
-# 2 fazer novos testes;
-# 3 implementar a função transaque, transferencia, translista e listaCliente;
+import pickle
+import sys
+import os
 import requests
+
+
+if os.path.getsize('data.pickle') > 0:
+    with open('data.pickle','rb') as p:
+        unpickler = pickle.Unpickler(p)
+        data = unpickler.load()
+else:
+    data = dict()
 
 
 Contas = dict(cod=[], saldo=[], tr=[])
@@ -10,31 +17,63 @@ cliente = dict(cod=[], nome=[], cidade=[], telefone=[], cc=[], address_data=[])
 Trans = dict(cod=[], tipo=[], origem=[], destino=[], valor=[])
 numClientes = 0
 
+
+if data.get('Contas'):
+    Contas = data.get('Contas')
+if data.get('cliente'):
+    cliente = data.get('cliente')
+if data.get('Trans'):
+    Trans = data.get('Trans')
+
+
+def sair():
+    data = dict(Contas=Contas, cliente=cliente, Trans=Trans)
+
+    with open('data.pickle', 'wb') as p:
+        pickle.dump(data, p)
+
+    sys.exit()
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
 def startsystem():
-    print('')
-    print('--------------- 1 - MENU INICIAL ---------------')
-    print('')
-    print('1 - CADASTRO DE CLIENTE')  #todo menu de criação de cliente está OK
-    print('2 - REALIZAR TRANSAÇÃO')  #entra no menu de transação OK
-    print('9 - SAIR')
-    starSystem = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
-    print()
+    global numClientes
+    menuInicial = '''
+********* MENU INICIAL ***********  
+
+*    1 - CADASTRO DE CLIENTE     *
+*    2 - REALIZAR TRANSAÇÃO      *
+*    9 - SAIR                    *
+'''
+    print(menuInicial)
+    print('*    Existem {} Clientes Castrados'.format(len(cliente['cod'])))
+    starSystem = input('*    DIGITE A OPÇÃO DESEJADA:__  ')
+    cls()
     if starSystem == '1':
         menuCliente()
-    if starSystem == '2':
+    elif starSystem == '2':
         menuTrans()
+    elif starSystem == '9':
+        sair()
     else:
-        print('Oção Inválida!')
-
+        print('OPÇÃO INVÁLIDA!')
+        startsystem()
 
 def menuCliente():
-    print('------------- 2 - MENU CLIENTE ----------------')  #todo menu de criação de cliente está OK
-    print('')
-    print('1 - CADASTRO')
-    print('2 - CONSULTA')
-    print('3 - LISTAR DE CLIENTES')
-    print('9 - VOLTAR')
-    menuCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
+    menuCli = '''
+********* MENU CLIENTE ***********
+
+*    1 - CADASTRO
+*    2 - CONSULTA
+*    3 - LISTAR DE CLIENTES
+*    9 - VOLTAR 
+'''
+    print(menuCli)
+    menuCli = input('*    DIGITE A OPÇÃO DESEJADA:__   ')
+    cls()
+    print()
     if menuCli == '1':
         novoCliente()
     if menuCli == '2':
@@ -46,14 +85,18 @@ def menuCliente():
 
 
 def menuTrans():
-    print('--------------- 3 - TRANSAÇÕES ----------------')
-    print("")
-    print("1 - DEPOSITO")  #inicia o deposito normalmente. OK
-    print("2 - SAQUE")
-    print("3 - TRANSFERENCIA")
-    print("4 - IMPRIMIR LISTA TRANSAÇÕES")
-    print("5 - VOLTAR")
-    trans = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
+    menupTrans = '''
+********* MENU TRANSAÇÕES ***********
+* 1 - DEPOSITO
+* 2 - SAQUE
+* 3 - TRANSFERENCIA
+* 4 - IMPRIMIR LISTA TRANSAÇÕES
+* 5 - VOLTAR 
+'''
+    print(menupTrans)
+
+    trans = input('* DIGITE A OPÇÃO DESEJADA:__   ')
+    cls()
     if trans == '1':
         transDeposito()
     if trans == '2':
@@ -65,10 +108,10 @@ def menuTrans():
 
 
 def consultaCep():  # <------ Consulta API Correios para busca de CEP
-    print('---------------------------')
-    print('----- Consulta CEP --------')
-    print('---------------------------')
-    print()
+    menuCep = ''' ---------------------------
+----- Consulta CEP --------
+--------------------------- '''
+    print(menuCep)
 
     cep_input = input('Digite o CEP para a consulta: ')
 
@@ -105,40 +148,34 @@ def consultaCep():  # <------ Consulta API Correios para busca de CEP
 
 
 def novoCliente():
-    # ----------- ("NOVO")Função Inserir novo Cliente, cria conta corrente e deposita valor inicial ---------------
+
     print()
     print('------- 1 - CADASTRO CLIENTE / C.C ---------------')
     print()
     cod = input('CODIGO DO CLIENTE: ')
     nome = input('NOME: ')
-    print('DESEJA CONSULTAR O CEP: ?')
-    cep = input('DIGITE 1. PARA SIM\n2. Continue...')
-    if cep == '1':
-        consultaCep()
+    telefone = input('TELEFONE: ')
+    cidade = input('CIDADE: ')
+    cc = input('N. CONTA-CORRENTE: ')
+    depinicial = input('DEPÓSITO INICIAL: ')
+    depinicial = float(depinicial)
+    print('')
+    cliente['cod'].append(cod)
+    cliente['nome'].append(nome)
+    cliente['cidade'].append(cidade)
+    cliente['telefone'].append(telefone)
+    Contas['cod'].append(cc)
+    Contas['saldo'].append(depinicial)
+    contador()
+    print('Cliente: {}, seu Codigo é: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cod, cc, depinicial))
+    print('')
+    outroCli = input('--> DIGITE 9 PARA VOLTAR:__   ')
+    cls ()
+    if outroCli == '9':
+        startsystem()
     else:
-        telefone = input('TELEFONE: ')
-        cidade = input('CIDADE:')
-        cc = input('N. CONTA-CORRENTE: ')
-        depinicial = input('DEPÓSITO INICIAL: ')
-        depinicial = float(depinicial)
-        print('')
-        cliente['cod'].append(cod)
-        cliente['nome'].append(nome)
-        cliente['cidade'].append(cidade)
-        cliente['telefone'].append(telefone)
-        Contas['cod'].append(cc)
-        Contas['saldo'].append(depinicial)
-        print('Cliente: {}, Conta-Corrente Numero: {} foi criado com Sucesso!!!!, depósito inicial de: {}'.format(nome, cc, depinicial))
-        print('')
-        print('DESEJA CADASTRAR OUTRO CLIENTE?: ')
-        print('1 - SIM: ')
-        print('2 - VOLTAR: ')
-        outroCli = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
-        if outroCli == '1':
-            novoCliente()
-        else:
-            startsystem()
-    print('-')
+        print('Opção inválida')
+
 
 
 def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente ---------------
@@ -166,10 +203,19 @@ def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente --
         else:
             startsystem()
 
+
 def listaCliente():
+    print('---------- 3. LISTA DE CLIENTES -----------')
+    print()
     print("Codigo \t Nome \t\t Telefone \t Conta \t Saldo")
     pos = cliente
     print(pos)
+    print('')
+    listavolta = input('DIGITE 9 MENU INICIAL: ')
+    if listavolta == '9':
+        startsystem()
+    print('')
+
 
 
 def transDeposito() -> object:
@@ -182,18 +228,21 @@ def transDeposito() -> object:
 
         pos = Contas['cod'].index(consultar)
         print()
-        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(cliente['nome'], Contas['saldo']))  #Buquei cliente no banco de dados e imprimi
+        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(cliente['nome'][pos], Contas['saldo'][pos]))  #Buquei cliente no banco de dados e imprimi
+        cls()
         deposito = input("\nInforme o valor do deposito: ")
         deposito = float(deposito)
         valor = Contas['saldo'][pos]
         valor = valor + deposito
         Contas['saldo'][pos] = valor
         print('Deposito realizado com Sucesso!!!')
-        print('O seu SALDO atual é de: {}, deseja realizar outro Depósito?: '.format(Contas['saldo']))
+        print()
+        print('O seu SALDO atual é de: {},\nDeseja realizar outro Depósito?: '.format(Contas['saldo'][pos]))
         print('')
         print('1 - SIM: ')
         print('2 - MENU INICIAL: ')
-        outroDep = input('********* DIGITE A OPÇÃO DESEJADA: ')
+        outroDep = input('********* DIGITE A OPÇÃO DESEJADA : ')
+        cls()
         if outroDep == '1':
             transDeposito()
         else:
@@ -201,54 +250,89 @@ def transDeposito() -> object:
 
     else:
         input("Conta nao existe!!")
+        mdep = '''
 
-        print('Deseja Realizar outro Depósito?: ')
-        print('1 - SIM: ')
-        print('2 - Voltar: ')
+Deseja Realizar outro Depósito?:
+1 - SIM:
+2 - Voltar:
+'''
+        print(mdep)
         outroDep = input('--> DIGITE A OPÇÃO DESEJADA:__   ')
+        cls()
         if outroDep == '1':
             transDeposito()
         else:
             startsystem()
 
 
-def transSaque():
-    consultar = input("\nInforme o codigo da conta em que deseja realizar o saque: ")
+def transSaque() -> object:
+    print()
+    print('---------- 3.1 REALIZANDO SAQUE -----------')
+    consultar = input("\nInforme o codigo da conta em que deseja realizar o deposito: ")
     consultarV = consultar in Contas['cod']
-
-    if consultarV == True:
-
+    cls()
+    if consultarV:
         pos = Contas['cod'].index(consultar)
-        saque = input("\nInforme o valor do saque: ")
+        print()
+        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(cliente['nome'][pos],
+                                                                                        Contas['saldo'][pos]))
+        saque = input("\nValor do saque R$:_ ")
         saque = float(saque)
         valor = Contas['saldo'][pos]
+        valor = valor - saque
+        Contas['saldo'][pos] = valor
+        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(cliente['nome'][pos],
+                                                                                        Contas['saldo'][pos]))
 
-        if valor > saque:  # INSERIR UMA VALIDAÇÃO DE LIMITE ()
-            valor = valor - saque
-            Contas['saldo'][pos] = valor
-
+        outroDep = input('********* DIGITE A OPÇÃO DESEJADA : ')
+        cls()
+        if outroDep == '1':
+            transSaque()
         else:
-            input("Saldo insuficiente!!")
+            startsystem()
 
+
+    print('O seu SALDO atual é de: {},\nDeseja realizar outro Saque?: '.format(Contas['saldo']))
+    print('')
+    print('1 - SIM: ')
+    print('2 - MENU INICIAL: ')
+    outroDep = input('********* DIGITE A OPÇÃO DESEJADA:_')
+    if outroDep == '1':
+        transSaque()
     else:
-        input("Conta nao existe!!")
+        startsystem()
+
+
 
 def transFerencia():
     print('MÉTODO - TRANSFERENCIA EM MANUTENÇÃO')
     menuTrans()
     print()
 
-def transLista():
+def transLista():  #extrato conta-corrente listar as transaçoes realizadas
     print('MÉTODO - LISTAR EM MANUTENÇÃO')
     menuTrans()
     print()
 
+def contador():
 
+    mensagem = '''
+Cliente Cadastrado Com sucesso!!! 
+    
+Deseja Realizar outro Cadastro?
 
+1 - SIM
+9 - VOLTAR
+'''
+    print(mensagem)
 
-# def main():
-#     pass
-#
+    opc = input('Digite a Opção Desejada: ')
+
+    if opc == 1:
+        novoCliente()
+    else:
+        startsystem()
+
 
 if __name__ == '__main__':
     startsystem()
