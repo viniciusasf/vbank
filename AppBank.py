@@ -207,9 +207,12 @@ def consultaCliente():  # ----------- ("NOVO")Função Consultar novo Cliente --
 def listaCliente():
     print('---------- 3. LISTA DE CLIENTES -----------')
     print()
-    print("Codigo \t Nome \t\t Telefone \t Conta \t Saldo")
-    pos = cliente
-    print(pos)
+    print("Codigo \t Nome \t\t Telefone")
+
+ 
+    for i in range(len(cliente['cod'])-1):
+        print(f"{cliente['cod'][i]} \t {cliente['nome'][i]}  \t {cliente['telefone'][i]}")
+ 
     print('')
     listavolta = input('DIGITE 9 MENU INICIAL: ')
     if listavolta == '9':
