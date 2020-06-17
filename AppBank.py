@@ -3,7 +3,6 @@ import sys
 import os
 
 
-
 if os.path.getsize('data.pickle') > 0:
     with open('data.pickle', 'rb') as p:
         unpickler = pickle.Unpickler(p)
@@ -33,8 +32,10 @@ def novoCliente():
     print()
     cod = input('CODIGO DO CLIENTE: ')
     nome = input('NOME: ')
+    nome.upper()
     telefone = input('TELEFONE: ')
     cidade = input('CIDADE: ')
+    cidade.upper()
     cc = input('N. CONTA-CORRENTE: ')
     depinicial = input('DEPÓSITO INICIAL: ')
     depinicial = float(depinicial)
@@ -59,9 +60,9 @@ def consultaCliente():
         pos = cliente['cod'].index(consultar)
         print('Cliente Localizado Com sucesso!')
         print('')
-        print("Codigo \t Nome \t\t Cidade \t Telefone")
-        print("  {0}    \t {1} \t {2} \t {3}".format(cliente['cod'][pos], cliente['nome'][pos], cliente['cidade'][pos],
-                                                cliente['telefone'][pos]))
+        print("Codigo \t Nome \t\t Cidade \t Telefone \t Saldo Atual")
+        print("  {0}    \t {1} \t {2} \t {3} \t {4} ".format(cliente['cod'][pos], cliente['nome'][pos], cliente['cidade'][pos],
+                                                cliente['telefone'][pos], Contas['saldo'][pos]))
         print('')
         monta_menu(menu_principal)
 
@@ -70,13 +71,16 @@ def consultaCliente():
         monta_menu(menu_cadastro)
 
 def listaCliente():
-    print('---------- 3. LISTA DE CLIENTES -----------')
+    print('------3. LISTA DE CLIENTES -----')
     print()
     print("Codigo \t Nome \t\t Telefone")
 
-    for i in range(len(cliente['cod']) - 1):
-        print(f"  {cliente['cod'][i]} \t {cliente['nome'][i]}  \t {cliente['telefone'][i]}")
-        monta_menu(menu_principal)
+    for i in range(len(cliente)-1):
+        print(f"   {cliente['cod'][i]}  \t {cliente['nome'][i]} \t {cliente['telefone'][i]}")
+    print('')
+    qtdecliente = len(cliente['cod'])
+    print('Existem {} Cliente Cadastrados'.format(qtdecliente))
+    monta_menu(menu_principal)
 
 def transDeposito() -> object:
     print('---------- 3.1 REALIZANDO DEPÓSITO -----------')
@@ -116,39 +120,69 @@ def transSaque() -> object:
             Contas['saldo'][pos] = valor
             print('Olá {} tudo bem?, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(cliente['nome'][pos],
                                                                                             Contas['saldo'][pos]))
+            monta_menu(menu_principal)
         else:
             print('{} voce não tem saldo para realizar saque de R$ {}'.format(cliente['nome'][pos], saque))
+            monta_menu(menu_trans)
 
 def transFerencia():
-    print('MÉTODO - TRANSFERENCIA EM MANUTENÇÃO')
+    print('---------- TRANSFERENCIA -----------')
+    transcontasaque = input("\nInforme o Numero da Conta-Corrente que deseja SACAR: ")
+    if transcontasaque in Contas['cod']:
+        pos1 = Contas['cod'].index(transcontasaque)
+        print('Bem Vindo {} o seu SALDO é de R$ {}'.format(cliente['nome'][pos1], Contas['saldo'][pos1]))
+        transferevalor = input('Informe o valor da TRANSFERÊNCIA R$ ')
+        transferevalor = float(transferevalor)
+        if transferevalor > Contas['saldo'][pos1]:
+            print('Voce não tem saldo para realizar a transferência de R$'.format(Contas['saldo'][pos1]))
+            monta_menu(menu_principal)
+        else:
+            transfcontadeposito = input('Informe o Numero da Conta-Corrente que deseja DEPOSITAR: ')
+            if transfcontadeposito in Contas['cod']:
+                pos2 = Contas['cod'].index(transfcontadeposito)
+                print('---------Transferencia Efetuada com Sucesso!!!---------')
+                print('O titular da Conta-Corrente é {}'.format(cliente['nome'][pos2]))
+                Contas['saldo'][pos1] = Contas['saldo'][pos1] - transferevalor
+                Contas['saldo'][pos2] = Contas['saldo'][pos2] + transferevalor
+                print('{} o saldo atual da sua Conta-Corrente é R$ {}'.format(cliente['nome'][pos1], Contas['saldo'][pos1]))
+                monta_menu(menu_principal)
+            else:
+                print('Conta Corrente não Localizada')
+                monta_menu(menu_principal)
+    else:
+        print('Conta Corrente Não Localizada')
+        monta_menu(menu_principal)
 
-def transLista():
-    print('MÉTODO - LISTAR EM MANUTENÇÃO')
+
+
 
 menu_cadastro = {
-    '1': ('- Cadastrar', novoCliente),
-    '2': ('- Consulta Cliente', consultaCliente),
-    '3': ('- Visualizar todos Clietes', listaCliente),
+    '1': ('- Cadastro', novoCliente),
+    '2': ('- Consulta', consultaCliente),
+    '3': ('- Lista', listaCliente),
     '9': ('- Deslogar', sair),
 }
 menu_trans = {
     '1': ('- Depósito', transDeposito),
     '2': ('- Saque', transSaque),
+    '3': ('- Transferência', transFerencia),
     '9': ('- Voltar', menu_cadastro),
 }
 menu_principal = {
-    '1': ('- Cadastro', menu_cadastro),
-    '2': ('- Transaçao', menu_trans),
+    '1': ('- Clientes', menu_cadastro),
+    '2': ('- Transações', menu_trans),
     '9': ('- Deslogar', sair),
 }
 def monta_menu(menu) -> object:
     print()
     print('******* Sistema VBANK *******:')
+    print('')
     for k, v in menu.items():
         texto, _ = v
         print(k, texto)
+    print('')
     opcao = input('Digite a Opçao Desejada:    ')
-    print('-' *30)
+    print('')
     try:
         escolhido = menu[opcao]
         _, funcao = escolhido
@@ -157,9 +191,8 @@ def monta_menu(menu) -> object:
         else:
             funcao()
     except KeyError:
-        print('Opção Inválida Tente novamente')
+        print('')
         monta_menu(menu_principal)
-
 
 
 if __name__ == '__main__':
