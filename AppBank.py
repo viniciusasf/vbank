@@ -3,6 +3,7 @@ import sys
 import os
 
 
+
 if os.path.getsize('data.pickle') > 0:
     with open('data.pickle', 'rb') as p:
         unpickler = pickle.Unpickler(p)
@@ -27,6 +28,7 @@ def sair():
         pickle.dump(data, p)
     sys.exit()
 
+
 def novoCliente():
     print('------- 1 - CADASTRO CLIENTE / C.C ---------------\n')
     qtdecliente = len(cliente['cod'])+1
@@ -49,6 +51,7 @@ def novoCliente():
     print('Nome do Cliente: {} \nSeu Codigo é: {} \nConta-Corrente Numero: {} Criado com Sucesso!!!! \nDepósito inicial de R$: {}'.format(nome, cod, cc, depinicial))
     monta_menu(menu_principal)
 
+
 def consultaCliente():
     print('--------------- 2. CONSULTA CLIENTE ---------------\n')
     consultar = input("Qual o codigo do cliente?: ")
@@ -65,19 +68,19 @@ def consultaCliente():
         print('Cliente Não Localizado, tente novamente\n')
         monta_menu(menu_cadastro)
 
+
 def listaCliente():
-    print('------3. LISTA DE CLIENTES -----')
-    print("Codigo \t Nome \t Telefone")
+    print('------3. LISTA DE CLIENTES -----\n')
+    print("CODIGO  -  NOME          -          TELEFONE")
     if len(cliente['cod']) < 1:
-        print('\nNão existe Cliente Cadastrado')
+        print('\nNão Existe Cliente Cadastrado\n')
         monta_menu(menu_cadastro)
     else:
-        for i in range(len(cliente)-1):
-            print(i)
-            print(f"{cliente['cod'][i]}\t {cliente['nome'][i]} \t {cliente['telefone'][i]}")
-        qtdecliente = len(cliente)
-        print('Existem {} Cliente Cadastrados'.format(qtdecliente))
-        monta_menu(menu_cadastro)
+        i=0
+        while i < len(cliente):
+            print(f"{cliente['cod'][i]}\t\t   {cliente['nome'][i]} \t\t\t\t{cliente['telefone'][i]}\n\n")
+            monta_menu(menu_principal)
+
 
 def transDeposito() -> object:
     print('---------- 3.1 REALIZANDO DEPÓSITO -----------')
@@ -98,6 +101,7 @@ def transDeposito() -> object:
     else:
         print("Conta nao existe!!")
         monta_menu(menu_principal)
+
 
 def transSaque() -> object:
     print('---------- 3.1 REALIZANDO SAQUE -----------')
@@ -120,6 +124,7 @@ def transSaque() -> object:
         else:
             print('{} voce não tem saldo para realizar saque de R$ {}'.format(cliente['nome'][pos], saque))
             monta_menu(menu_trans)
+
 
 def transFerencia():
     print('---------- TRANSFERENCIA -----------')
@@ -148,8 +153,6 @@ def transFerencia():
     else:
         print('Conta Corrente Não Localizada')
         monta_menu(menu_principal)
-
-
 
 
 menu_cadastro = {
