@@ -31,14 +31,15 @@ def sair():
 
 def novoCliente():
     print('------- 1 - CADASTRO CLIENTE / C.C ---------------\n')
-    qtdecliente = len(cliente['cod'])+1
-    cod = qtdecliente
+    #qtdecliente = len(cliente['cod'])+1
+    #cod = qtdecliente
+    cod = input('CODIGO: ')
     nome = input('NOME: ')
     nome.upper()
     telefone = input('TELEFONE: ')
     cidade = input('CIDADE: ')
     cidade.upper()
-    cc = cod
+    cc = input('CONTA-CORRENTE ')
     depinicial = input('DEPÓSITO INICIAL: ')
     depinicial = float(depinicial)
     cliente['cod'].append(cod)
@@ -154,6 +155,14 @@ def transFerencia():
         print('Conta Corrente Não Localizada')
         monta_menu(menu_principal)
 
+def pagamentos():
+    print('---------- PAGAMENTOS -----------')
+    consultar = input ("\nInforme o Numero da Conta-Corrente que deseja realizar utilizar para PAGAMENTO: ")
+    if consultar in Contas['cod']:
+        cc = Contas['cod'].index(consultar)
+        print ('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format (cliente['nome'][cc],
+                                                                                        Contas['saldo'][cc]))
+
 
 menu_cadastro = {
     '1': ('- Cadastro', novoCliente),
@@ -165,6 +174,7 @@ menu_trans = {
     '1': ('- Depósito', transDeposito),
     '2': ('- Saque', transSaque),
     '3': ('- Transferência', transFerencia),
+    '4': ('- Pagamentos', pagamentos),
     '9': ('- Voltar', menu_cadastro),
 }
 menu_principal = {
