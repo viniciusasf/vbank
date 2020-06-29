@@ -1,6 +1,7 @@
 import pickle
 import sys
 import os
+from time import sleep
 from tabulate import tabulate
 
 
@@ -26,9 +27,12 @@ if data.get('Trans'):
 
 
 def sair():
+    print('Encerrando o sistema. \nAguarde...\nGravando Dados no Bando de Dados...')
+    contagem()
     data = dict(Contas=Contas, Cliente=Cliente, Trans=Trans)
     with open('data.pickle', 'wb') as p:
         pickle.dump(data, p)
+    print('Sistema Encerrado')
     sys.exit()
 
 
@@ -75,8 +79,10 @@ def imprime_clientes():
     numeroclientes = len(Cliente['cod'])
     if numeroclientes >= 2:
         print('* {} CLIENTES LOCALIZADOS COM SUCESSO *'.format(numeroclientes))
+        monta_menu(menu_principal)
     else:
         print('* {} CLIENTE LOCALIZADO COM SUCESSO *'.format(numeroclientes))
+        monta_menu(menu_principal)
 
 
 def transDeposito() -> object:
@@ -92,8 +98,7 @@ def transDeposito() -> object:
         valor = valor + deposito
         Contas['saldo'][pos1] = valor
         print('Deposito realizado com Sucesso!!!\n')
-        print('Olá {} tudo bem?, \nSaldo atual da Conta é de R$: {}'.format(Cliente['nome'][pos1],
-                                                                                           Contas['saldo'][pos1]))
+        print('{} \nSaldo atual da Conta é de R$: {}'.format(Contas['saldo'][pos1]))
         print('O Comprovante de seu Depósito é: {}'.format(Trans['codigotransacao']))
         monta_menu(menu_principal)
 
@@ -116,7 +121,7 @@ def transSaque() -> object:
         if saque <= valor:
             valor -= saque
             Contas['saldo'][pos] = valor
-            print('Olá {} tudo bem?, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
+            print('{}, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
                                                                                             Contas['saldo'][pos]))
             monta_menu(menu_principal)
         else:
@@ -185,6 +190,12 @@ Selecione o Pagamento:
             pagamentos()
     else:
         print('Conta-Corrente não localizada')
+
+
+def contagem():
+    for cont in range(3, -1, -1):
+        print(cont,'... ', end='')
+        sleep(1)
 
 
 menu_cadastro = {
