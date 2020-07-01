@@ -108,25 +108,45 @@ def transDeposito() -> object:
 
 
 def transSaque() -> object:
-    print('---------- 3.1 REALIZANDO SAQUE -----------\n')
+    print ('-' * 30)
+    print ('{:^30}'.format('BANCO VBank'))
+    print ('{:^30}'.format('SAQUE'))
+    print ('-' * 30)
     consultar = input("\nInforme o Numero da Conta-Corrente que deseja realizar o SAQUE: ")
     consultarV = consultar in Contas['cod']
     if consultarV:
         pos = Contas['cod'].index(consultar)
         print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(Cliente['nome'][pos],
                                                                                         Contas['saldo'][pos]))
-        saque = input("\nValor do saque R$:_ ")
+
+        saque = float(input("Digite o valor do SAQUE R$: "))
+        cedulas(saque)
+        input('Precione ENTER para Confirmar o SAQUE')
         saque = float(saque)
         valor = Contas['saldo'][pos]
         if saque <= valor:
             valor -= saque
             Contas['saldo'][pos] = valor
-            print('{}, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
-                                                                                            Contas['saldo'][pos]))
+            print ('{}, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
+                                                                                 Contas['saldo'][pos]))
             monta_menu(menu_principal)
         else:
-            print('{} voce não tem saldo para realizar saque de R$ {}'.format(Cliente['nome'][pos], saque))
-            monta_menu(menu_trans)
+            print ('{} voce não tem saldo para realizar saque de R$ {}'.format(Cliente['nome'][pos], saque))
+            monta_menu (menu_trans)
+
+
+def cedulas(saque):
+    print('Contando CÉDULAS... Aguarde')
+    contagem()
+    notas = [100, 50, 20, 10, 5, 1]
+    notas.sort()
+    notas.reverse()
+    numNotas = []
+    for i in notas:
+        numNotas.append(saque / i)
+        saque %= i
+    for i in range(len(notas)):
+        print(f"Notas de %d = %d" % (notas[i], numNotas[i],))
 
 
 def transFerencia():
