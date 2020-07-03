@@ -119,7 +119,7 @@ def transSaque() -> object:
         print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(Cliente['nome'][pos],
                                                                                         Contas['saldo'][pos]))
 
-        saque = float(input("Digite o valor do SAQUE R$: "))
+        saque = int(input("Digite o valor do SAQUE R$: "))
         cedulas(saque)
         input('Precione ENTER para Confirmar o SAQUE')
         saque = float(saque)
@@ -136,8 +136,10 @@ def transSaque() -> object:
 
 
 def cedulas(saque):
-    print('Contando CÉDULAS... Aguarde')
+    print('\nContando CÉDULAS... Aguarde')
     contagem()
+    print()
+    print('Cédulas Disponíveis\n')
     notas = [100, 50, 20, 10, 5, 1]
     notas.sort()
     notas.reverse()
@@ -146,7 +148,8 @@ def cedulas(saque):
         numNotas.append(saque / i)
         saque %= i
     for i in range(len(notas)):
-        print(f"Notas de %d = %d" % (notas[i], numNotas[i],))
+        zero = list(filter(lambda x: x != 0, numNotas[i]))
+        print(f"Notas de %d = %d" % (notas[i], zero[i],))
 
 
 def transFerencia():
