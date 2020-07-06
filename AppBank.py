@@ -3,6 +3,7 @@ import sys
 import os
 from time import sleep
 from tabulate import tabulate
+from collections import Counter
 
 
 if os.path.getsize('data.pickle') > 0:
@@ -13,7 +14,7 @@ else:
     data = dict()
 
 
-Contas = dict(cod=[], saldo=[], tr=[])
+Contas = dict(cod=[], saida=[], entrada=[], saldo=[], tr=[], comprovante=[])
 Cliente = dict(cod=[], nome=[], cidade=[], telefone=[])
 Trans = dict(codtransConta=[], codigotransacao=[], tipo=[], origem=[], destino=[], valor=[])
 
@@ -66,7 +67,7 @@ def consultaCliente():
         pos = Cliente['cod'].index(consultar)
         v = Cliente['cod'][pos], Cliente['nome'][pos], Cliente['cidade'][pos], Cliente['telefone'][pos]
         print('Cliente Localizado Com sucesso!\n')
-        print(tabulate(v, headers=['codigo', "Nome", "Cidade", "Telefone"]))
+        print(tabulate(v, headers=['codigo', "Nome", "Cidade", "Telefone"]), end='')
         monta_menu(menu_principal)
     else:
         print('Cliente Não Localizado, tente novamente\n')
@@ -98,8 +99,11 @@ def transDeposito() -> object:
         valor = valor + deposito
         Contas['saldo'][pos1] = valor
         print('Deposito realizado com Sucesso!!!\n')
-        print('{} \nSaldo atual da Conta é de R$: {}'.format(Contas['saldo'][pos1]))
-        print('O Comprovante de seu Depósito é: {}'.format(Trans['codigotransacao']))
+        print('{} \nSaldo atual da Conta é de R$: {}'.format(Cliente['nome'][pos1], Contas['saldo'][pos1]))
+        Contas['tr'].append('Deposito')
+        Contas['cod'].append([pos1])
+        contador = Counter(Contas['comprovante'])
+        print('O Comprovante de seu Depósito é: {}'.format(contador))
         monta_menu(menu_principal)
 
     else:
@@ -108,31 +112,34 @@ def transDeposito() -> object:
 
 
 def transSaque() -> object:
-    print ('-' * 30)
-    print ('{:^30}'.format('BANCO VBank'))
-    print ('{:^30}'.format('SAQUE'))
-    print ('-' * 30)
+    print('-' * 30)
+    print('{:^30}'.format('BANCO VBank'))
+    print('{:^30}'.format('SAQUE'))
+    print('-' * 30)
     consultar = input("\nInforme o Numero da Conta-Corrente que deseja realizar o SAQUE: ")
     consultarV = consultar in Contas['cod']
-    if consultarV:
-        pos = Contas['cod'].index(consultar)
-        print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(Cliente['nome'][pos],
-                                                                                        Contas['saldo'][pos]))
-
-        saque = int(input("Digite o valor do SAQUE R$: "))
-        cedulas(saque)
-        input('Precione ENTER para Confirmar o SAQUE')
-        saque = float(saque)
-        valor = Contas['saldo'][pos]
-        if saque <= valor:
-            valor -= saque
-            Contas['saldo'][pos] = valor
-            print ('{}, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
-                                                                                 Contas['saldo'][pos]))
-            monta_menu(menu_principal)
-        else:
-            print ('{} voce não tem saldo para realizar saque de R$ {}'.format(Cliente['nome'][pos], saque))
-            monta_menu (menu_trans)
+    cont = []
+    while True:
+        if consultarV:
+            pos = Contas['cod'].index(consultar)
+            print('Olá {} tudo bem?, \nSaldo atual da sua Conta-Corrente é de: {}'.format(Cliente['nome'][pos],
+                                                                                            Contas['saldo'][pos]))
+            saque = int(input("Digite o valor do SAQUE R$: "))
+            input('Precione ENTER para Confirmar o SAQUE')
+            saque = float(saque)
+            valor = Contas['saldo'][pos]
+            if saque <= valor:
+                valor -= saque
+                Contas['saldo'][pos] = valor
+                print ('{}, o Saldo atual da sua Conta-Corrente é de R$: {}'.format(Cliente['nome'][pos],
+                                                                                     Contas['saldo'][pos]))
+                Contas['tr'].append('Saque')
+                comprovantesaque = Counter(cont)
+                Contas['comprovante'].append(comprovantesaque)
+                monta_menu(menu_principal)
+            else:
+                print ('{} voce não tem saldo para realizar saque de R$ {}'.format(Cliente['nome'][pos], saque))
+                monta_menu (menu_trans)
 
 
 def cedulas(saque):
@@ -145,17 +152,16 @@ def cedulas(saque):
     notas.reverse()
     numNotas = []
     for i in notas:
-        numNotas.append(saque / i)
+        numNotas.append(saque / i)#<-- Informar apenas notas válidas / não informar o Zero (0)
         saque %= i
     for i in range(len(notas)):
-        zero = list(filter(lambda x: x != 0, numNotas[i]))
-        print(f"Notas de %d = %d" % (notas[i], zero[i],))
+        print(f"Notas de %d = %d" % (notas[i], numNotas[i],)) #<-- Informar apenas notas válidas não informar o Zero (0)
 
 
 def transFerencia():
     print('---------- TRANSFERENCIA -----------')
     transcontasaque = input("\nInforme o Numero da Conta-Corrente que deseja SACAR: ")
-    if transcontasaque in Trans['codtransConta']:
+    if transcontasaque in str(Trans['codtransConta']):
         pos1 = Trans['codtransConta'].index(transcontasaque)
         print('Bem Vindo {} o seu SALDO é de R$ {}'.format(Cliente['nome'][pos1], Contas['saldo'][pos1]))
         transferevalor = input('Informe o valor da TRANSFERÊNCIA R$ ')
@@ -172,6 +178,7 @@ def transFerencia():
                 Contas['saldo'][pos1] = Contas['saldo'][pos1] - transferevalor
                 Contas['saldo'][pos2] = Contas['saldo'][pos2] + transferevalor
                 print('{} o saldo atual da sua Conta-Corrente é R$ {}'.format(Cliente['nome'][pos1], Contas['saldo'][pos1]))
+                Contas['tr'].append(3)
                 monta_menu(menu_principal)
             else:
                 print('Conta Corrente não Localizada')
@@ -220,6 +227,15 @@ def contagem():
         print(cont,'... ', end='')
         sleep(1)
 
+def extrato():
+    print('---------- EXTRATO CONTA-CORRENTE -----------')
+    contaextrato = input("\nInforme o Numero da Conta-Corrente: ")
+    if contaextrato in Cliente['cod']:
+        extra = Cliente['cod'].index(contaextrato)
+        print('Bem Vindo {} o seu SALDO é de R$ {}'.format(Cliente['nome'][extra], Contas['saldo'][extra]))
+        print(tabulate(Contas, headers=['codigo', "saldo", "Tr", "Comprovante"], tablefmt="grid"))
+        monta_menu(menu_principal)
+
 
 menu_cadastro = {
     '1': ('- Cadastro', novoCliente),
@@ -232,6 +248,7 @@ menu_trans = {
     '2': ('- Saque', transSaque),
     '3': ('- Transferência', transFerencia),
     '4': ('- Pagamentos', pagamentos),
+    '5': ('- Extrato', extrato),
     '9': ('- Voltar', menu_cadastro),
 }
 menu_principal = {
